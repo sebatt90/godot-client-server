@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://cg4eoqgjta4s8"]
+
+[ext_resource type="Script" path="res://scripts/custom_nodes/Client.cs" id="1_5pyi6"]
+[ext_resource type="PackedScene" uid="uid://07jdjkp1s8u6" path="res://player.tscn" id="2_2adqt"]
+
+[node name="world" type="Node2D" node_paths=PackedStringArray("_player")]
+script = ExtResource("1_5pyi6")
+_name = "herr_sebatt"
+_serverIp = "127.0.0.1"
+_port = 4242
+_player = NodePath("player")
+
+[node name="player" parent="." instance=ExtResource("2_2adqt")]
