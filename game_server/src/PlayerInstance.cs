@@ -15,14 +15,14 @@ namespace GameServer
             this.pm = pm;
         }
 
-        public void setPm(PlayerModel pm)
+        public PlayerModel Pm
         {
-            this.pm = pm;
+            get { return pm; }
         }
 
-        public IPEndPoint getEndPoint()
+        public IPEndPoint EndPoint
         {
-            return ie;
+            get { return ie}
         }
     }
 }
