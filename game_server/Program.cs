@@ -18,7 +18,7 @@ namespace GameServer
             Console.WriteLine("Server started on Port " + ServerSettings.port);
 
             IPEndPoint ep = null;
-            PlayerModel pm;
+            PlayerModel pm = null;
 
             Player player = new Player(100);
 
@@ -26,10 +26,10 @@ namespace GameServer
             {
                 byte[] receivedData = udpClient.Receive(ref ep);
 
-                string msg = Encoding.ASCII.GetString(receivedData);
+                string data = Encoding.ASCII.GetString(receivedData);
 
 
-                pm = JsonSerializer.Deserialize<PlayerModel>(msg);
+                pm = JsonSerializer.Deserialize<PlayerModel>(data);
 
                 // Add to player list...
                 if (!player.tryConnect(ep, pm))
@@ -40,9 +40,12 @@ namespace GameServer
                 player.doUpdate(ep, pm);
 
                 // send response
+                string res = player.getOtherPlayerJSON(pm);
+                byte[] resBytes = Encoding.ASCII.GetBytes(res);
 
+                udpClient.Send(resBytes, resBytes.Length, ep);
 
-                Console.WriteLine(msg);
+                Console.WriteLine(data);
             }
 
 

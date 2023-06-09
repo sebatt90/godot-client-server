@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://dlqeivvw8qw8t"]
+
+[ext_resource type="Script" path="res://scripts/ForeignPlayer.cs" id="1_k3dyu"]
+[ext_resource type="Texture2D" uid="uid://bau02uwqnjnkq" path="res://icon.svg" id="1_mtmrl"]
+
+[node name="foreign_player" type="Node2D"]
+script = ExtResource("1_k3dyu")
+
+[node name="Icon" type="Sprite2D" parent="."]
+texture = ExtResource("1_mtmrl")
+
+[node name="tag_name" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -51.5
+offset_top = -95.0
+offset_right = 51.5
+offset_bottom = -69.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+text = "Lorem Ipsum"
+horizontal_alignment = 1

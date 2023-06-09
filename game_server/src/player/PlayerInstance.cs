@@ -18,11 +18,12 @@ namespace GameServer
         public PlayerModel Pm
         {
             get { return pm; }
+            set { this.pm = value; }
         }
 
         public IPEndPoint EndPoint
         {
-            get { return ie}
+            get { return ie; }
         }
     }
 }

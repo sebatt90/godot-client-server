@@ -1,13 +1,20 @@
-[gd_scene load_steps=3 format=3 uid="uid://cg4eoqgjta4s8"]
+[gd_scene load_steps=4 format=3 uid="uid://cg4eoqgjta4s8"]
 
 [ext_resource type="Script" path="res://scripts/custom_nodes/Client.cs" id="1_5pyi6"]
 [ext_resource type="PackedScene" uid="uid://07jdjkp1s8u6" path="res://player.tscn" id="2_2adqt"]
+[ext_resource type="PackedScene" uid="uid://dlqeivvw8qw8t" path="res://foreign_player.tscn" id="2_a31u0"]
 
-[node name="world" type="Node2D" node_paths=PackedStringArray("_player")]
+[node name="world" type="Node2D" node_paths=PackedStringArray("foreignPlayerContainer", "_player")]
 script = ExtResource("1_5pyi6")
-_name = "herr_sebatt"
 _serverIp = "127.0.0.1"
 _port = 4242
+foreignPlayerBase = ExtResource("2_a31u0")
+foreignPlayerContainer = NodePath("players")
 _player = NodePath("player")
 
 [node name="player" parent="." instance=ExtResource("2_2adqt")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.5, 0.5)
+
+[node name="players" type="Node2D" parent="."]
