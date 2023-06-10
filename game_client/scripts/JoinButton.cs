@@ -5,11 +5,11 @@ using System;
 public partial class JoinButton : Button
 {
     [Export]
-    private TextEdit nameLabel;
+    private LineEdit nameLabel;
 
     public void _OnPressed()
     {
-        PlayerInfo.playerName = (nameLabel.Text != null) ? nameLabel.Text : "nullo";
+        PlayerInfo.playerName = (nameLabel.Text != null) ? nameLabel.Text : "playerx";
         GetTree().ChangeSceneToFile("res://world.tscn");
     }
 }

@@ -27,7 +27,7 @@ text = "Join"
 script = ExtResource("1_s0sd3")
 nameLabel = NodePath("../TextEdit")
 
-[node name="TextEdit" type="TextEdit" parent="."]
+[node name="TextEdit" type="LineEdit" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
