@@ -3,14 +3,15 @@
 [ext_resource type="Script" path="res://scripts/custom_nodes/Client.cs" id="1_5pyi6"]
 [ext_resource type="PackedScene" uid="uid://dlqeivvw8qw8t" path="res://foreign_player.tscn" id="2_a31u0"]
 
-[node name="world" type="Node2D" node_paths=PackedStringArray("foreignPlayerContainer")]
-script = ExtResource("1_5pyi6")
-serverIp = "127.0.0.1"
-port = 4242
-foreignPlayerBase = ExtResource("2_a31u0")
-foreignPlayerContainer = NodePath("players")
+[node name="world" type="Node2D"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(0.5, 0.5)
 
 [node name="players" type="Node2D" parent="."]
+
+[node name="Client" type="Node" parent="."]
+script = ExtResource("1_5pyi6")
+serverIp = "127.0.0.1"
+port = 4242
+foreignPlayerBase = ExtResource("2_a31u0")

@@ -22,15 +22,17 @@ public partial class Client : Node
     private PackedScene foreignPlayerBase;
 
     [Export]
-    private Node foreignPlayerContainer;
+    private Node PlayersContainer;
 
     [ExportCategory("Player info")]
     [Export]
-    private Node2D player;
+    private PackedScene player;
 
     private PacketPeerUdp UDP = new PacketPeerUdp();
     private bool connected = false;
     private string res;
+
+    private Node2D playerInst;
 
     private ReqModel req;
     public override void _Ready()
@@ -81,13 +83,20 @@ public partial class Client : Node
             req = new ReqModel()
             {
                 Type = "UPDATE",
-                pos_x = 1,
-                pos_y = 1
             };
+
+            req.pos_x = (playerInst == null) ? 0 : playerInst.Position.X;
+            req.pos_y = (playerInst == null) ? 0 : playerInst.Position.Y;
+
+            send(JsonSerializer.Serialize(req));
             // Try to contact server
             if (UDP.GetAvailablePacketCount() > 0)
             {
                 //GD.Print($"Connected: {_udp.GetPacket().GetStringFromUtf8()}");
+
+                updateAllClients(response().Split(";").ToList<string>());
+
+                GD.Print(response());
             }
 
         }
@@ -95,9 +104,32 @@ public partial class Client : Node
     }
 
     // this part should be common to all games, I think
-    private void updateAllClients(List<ReqModel> pList)
+    private void updateAllClients(List<string> pList)
     {
-        // TODO
+        if (pList.Count == 0) return;
+
+        for (int i = 0; i < pList.Count; i++)
+        {
+            ReqModel req = JsonSerializer.Deserialize<ReqModel>(pList[i]);
+
+            Node2D obj = PlayersContainer.GetChild<Node2D>(req.Id);
+
+            if (obj != null)
+            {
+                // update positon
+                // NOTE: perhaps this could be a signal
+                obj.Position = new Vector2(req.pos_x, req.pos_y);
+
+                continue;
+            }
+
+            obj.AddChild((client_id == req.Id) ? player.Instantiate<Node2D>() : foreignPlayerBase.Instantiate<Node2D>());
+
+            if (client_id == req.Id)
+                playerInst = obj;
+            // NOTE: perhaps this too could be a signal
+            obj.Position = new Vector2(req.pos_x, req.pos_y);
+        }
     }
 
     private void send(string req)
