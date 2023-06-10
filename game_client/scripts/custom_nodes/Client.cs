@@ -9,10 +9,12 @@ public partial class Client : Node
 {
 
     [Export]
-    private string _serverIp;
+    private string serverIp;
 
     [Export]
-    private int _port;
+    private int port;
+
+    private int client_id;
 
     [ExportCategory("Foreign Players")]
 
@@ -24,75 +26,89 @@ public partial class Client : Node
 
     [ExportCategory("Player info")]
     [Export]
-    private Node2D _player;
+    private Node2D player;
 
-    private PacketPeerUdp _udp = new PacketPeerUdp();
-    private bool _connected = false;
+    private PacketPeerUdp UDP = new PacketPeerUdp();
+    private bool connected = false;
+    private string res;
 
-
-    private PlayerModel plr;
+    private ReqModel req;
     public override void _Ready()
     {
-        // yeah this will be provided by an external node, but so far, we're doing it like this
-        _udp.ConnectToHost(_serverIp, _port);
-        plr = new PlayerModel
+        // connecting to the server
+        /*
+            TEMPORARY
+            some useful commands here:
+            put packets
+            _udp.PutPacket(Encoding.Default.GetBytes(JsonSerializer.Serialize(plr)));
+
+            get response string
+            _udp.GetPacket().GetStringFromUtf8()
+
+        */
+        UDP.ConnectToHost(serverIp, port);
+
+        // send connection packet
+        req = new ReqModel()
         {
-            playerName = PlayerInfo.playerName,
-            x_pos = _player.Position.X,
-            y_pos = _player.Position.Y
+            Type = "JOIN",
+            Name = PlayerInfo.playerName
         };
+        GD.Print("Trying to connect...");
+        send(JsonSerializer.Serialize(req));
+
+        if (UDP.GetAvailablePacketCount() > 0)
+        {
+            res = response();
+
+            if (res.ToInt() != -1)
+            {
+                this.client_id = res.ToInt();
+                this.connected = true;
+
+                GD.Print("Connected successfully!");
+                return;
+            }
+
+            GD.Print("Couldn't connect to server!");
+        }
     }
 
     public override void _Process(double delta)
     {
-        if (!_connected)
+        if (connected)
         {
-            // Try to contact server
-            plr.x_pos = _player.Position.X;
-            plr.y_pos = _player.Position.Y;
-
-            _udp.PutPacket(Encoding.Default.GetBytes(JsonSerializer.Serialize(plr)));
-        }
-        if (_udp.GetAvailablePacketCount() > 0)
-        {
-            //GD.Print($"Connected: {_udp.GetPacket().GetStringFromUtf8()}");
-
-            List<string> tList = _udp.GetPacket().GetStringFromUtf8().Split(';').ToList<string>();
-
-            if (tList != null)
-                updatePlayers(tList);
-        }
-    }
-
-    private void updatePlayers(List<string> pList)
-    {
-        foreach (string json in pList)
-        {
-            GD.Print(json);
-            PlayerModel pm = JsonSerializer.Deserialize<PlayerModel>(json);
-            Node2D foreignPlayer;
-            // check if already exists
-            for (int i = 0; i < foreignPlayerContainer.GetChildCount(); i++)
+            req = new ReqModel()
             {
-                foreignPlayer = foreignPlayerContainer.GetChild<ForeignPlayer>(i);
-
-                if (((ForeignPlayer)foreignPlayer).id == pm.id)
-                {
-                    foreignPlayer.Position = new Vector2(pm.x_pos, pm.y_pos);
-
-                    return;
-                }
+                Type = "UPDATE",
+                pos_x = 1,
+                pos_y = 1
+            };
+            // Try to contact server
+            if (UDP.GetAvailablePacketCount() > 0)
+            {
+                //GD.Print($"Connected: {_udp.GetPacket().GetStringFromUtf8()}");
             }
 
-
-            foreignPlayer = foreignPlayerBase.Instantiate<Node2D>();
-
-            ((ForeignPlayer)foreignPlayer).name = pm.playerName;
-            ((ForeignPlayer)foreignPlayer).id = pm.id;
-
-            foreignPlayer.Position = new Vector2(pm.x_pos, pm.y_pos);
-
-            foreignPlayerContainer.AddChild(foreignPlayer);
         }
+
     }
+
+    // this part should be common to all games, I think
+    private void updateAllClients(List<ReqModel> pList)
+    {
+        // TODO
+    }
+
+    private void send(string req)
+    {
+        UDP.PutPacket(Encoding.Default.GetBytes(req));
+    }
+
+    private string response()
+    {
+        return UDP.GetPacket().GetStringFromUtf8();
+    }
+
+    // The functions listed below are very much game specific
 }
