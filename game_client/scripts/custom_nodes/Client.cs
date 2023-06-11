@@ -153,15 +153,6 @@ public partial class Client : Node
                 // NOTE: perhaps this could be a signal
                 obj.Position = new Vector2(req.pos_x, req.pos_y);
 
-
-            // NOTE: this is probabily useless
-            /*
-            if (client_id == req.Id)
-                playerInst = obj;
-            */
-
-
-
         }
     }
 
