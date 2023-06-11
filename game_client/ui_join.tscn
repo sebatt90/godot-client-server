@@ -10,7 +10,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="joinbutton" type="Button" parent="." node_paths=PackedStringArray("nameLabel")]
+[node name="joinbutton" type="Button" parent="." node_paths=PackedStringArray("nameLabel", "iplabel")]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -18,16 +18,31 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -19.0
-offset_top = 34.5
+offset_top = 47.5
 offset_right = 19.0
-offset_bottom = 65.5
+offset_bottom = 78.5
 grow_horizontal = 2
 grow_vertical = 2
 text = "Join"
 script = ExtResource("1_s0sd3")
-nameLabel = NodePath("../TextEdit")
+nameLabel = NodePath("../nickcontainer/nickname")
+iplabel = NodePath("../nickcontainer2/serverip")
 
-[node name="TextEdit" type="LineEdit" parent="."]
+[node name="nickcontainer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -80.0
+offset_right = 20.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="nickname" type="LineEdit" parent="nickcontainer"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -35,12 +50,74 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -96.5
-offset_top = -14.0
+offset_top = -15.5
 offset_right = 96.5
-offset_bottom = 14.0
+offset_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
 text = "player"
 placeholder_text = "Name here"
+
+[node name="Label" type="Label" parent="nickcontainer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -39.5
+offset_top = -46.0
+offset_right = 39.5
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Nickname"
+horizontal_alignment = 1
+
+[node name="nickcontainer2" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -7.0
+offset_right = 20.0
+offset_bottom = 33.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="serverip" type="LineEdit" parent="nickcontainer2"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -96.5
+offset_top = -15.5
+offset_right = 96.5
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "127.0.0.1:4242"
+placeholder_text = "Ip here"
+
+[node name="Label" type="Label" parent="nickcontainer2"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -39.5
+offset_top = -46.0
+offset_right = 39.5
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Ip"
+horizontal_alignment = 1
 
 [connection signal="pressed" from="joinbutton" to="joinbutton" method="_OnPressed"]

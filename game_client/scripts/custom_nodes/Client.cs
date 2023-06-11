@@ -9,12 +9,6 @@ using System.Text.Json;
 public partial class Client : Node
 {
 
-    [Export]
-    private string serverIp;
-
-    [Export]
-    private int port;
-
     private int client_id;
 
     [ExportCategory("Foreign Players")]
@@ -49,7 +43,7 @@ public partial class Client : Node
             _udp.GetPacket().GetStringFromUtf8()
 
         */
-        UDP.ConnectToHost(serverIp, port);
+        UDP.ConnectToHost((PlayerInfo.ip != null) ? PlayerInfo.ip : "127.0.0.1", PlayerInfo.port);
 
         // send connection packet
         req = new ReqModel()
