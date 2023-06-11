@@ -135,7 +135,7 @@ public partial class Client : Node
 
             if (obj == null)
             {
-                obj = (client_id == req.Id) ? player.Instantiate<Node2D>() : foreignPlayerBase.Instantiate<Node2D>();
+                obj = (client_id == req.Id) ? player.Instantiate<Node2D>() : instForeignPlayer(req.Name);
 
                 if (client_id == req.Id)
                     playerInst = obj;
@@ -148,9 +148,10 @@ public partial class Client : Node
             }
 
 
-            // update positon
-            // NOTE: perhaps this could be a signal
-            obj.Position = new Vector2(req.pos_x, req.pos_y);
+            if (client_id != req.Id)
+                // update positon
+                // NOTE: perhaps this could be a signal
+                obj.Position = new Vector2(req.pos_x, req.pos_y);
 
 
             // NOTE: this is probabily useless
@@ -162,6 +163,14 @@ public partial class Client : Node
 
 
         }
+    }
+
+    private Node2D instForeignPlayer(string name)
+    {
+        ForeignPlayer fPlr = foreignPlayerBase.Instantiate<ForeignPlayer>();
+        fPlr.name = name;
+
+        return (Node2D)fPlr;
     }
 
     private void send(string req)

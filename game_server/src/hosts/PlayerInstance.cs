@@ -23,6 +23,7 @@ namespace GameServer.Hosts
             {
                 Id = playerId,
                 Type = "UPDATE",
+                Name = playerName,
                 pos_x = Position.X,
                 pos_y = Position.Y
             };
