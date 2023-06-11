@@ -40,7 +40,7 @@ offset_right = 96.5
 offset_bottom = 14.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "Roblox"
+text = "player"
 placeholder_text = "Name here"
 
 [connection signal="pressed" from="joinbutton" to="joinbutton" method="_OnPressed"]

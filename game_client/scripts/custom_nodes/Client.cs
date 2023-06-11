@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using Godot;
@@ -59,16 +60,36 @@ public partial class Client : Node
         GD.Print("Trying to connect...");
         send(JsonSerializer.Serialize(req));
 
+
+    }
+
+    public override void _Process(double delta)
+    {
+        // if connected
+        switch (connected)
+        {
+            case true:
+
+                update();
+                break;
+            case false:
+                join();
+                break;
+        }
+
+    }
+
+    private void join()
+    {
         if (UDP.GetAvailablePacketCount() > 0)
         {
             res = response();
-
             if (res.ToInt() != -1)
             {
+                GD.Print("Connected successfully!");
                 this.client_id = res.ToInt();
                 this.connected = true;
 
-                GD.Print("Connected successfully!");
                 return;
             }
 
@@ -76,59 +97,70 @@ public partial class Client : Node
         }
     }
 
-    public override void _Process(double delta)
+    private void update()
     {
-        if (connected)
+        req = new ReqModel()
         {
-            req = new ReqModel()
-            {
-                Type = "UPDATE",
-            };
+            Type = "UPDATE",
+        };
 
-            req.pos_x = (playerInst == null) ? 0 : playerInst.Position.X;
-            req.pos_y = (playerInst == null) ? 0 : playerInst.Position.Y;
+        req.pos_x = (playerInst == null) ? 0 : playerInst.Position.X;
+        req.pos_y = (playerInst == null) ? 0 : playerInst.Position.Y;
 
-            send(JsonSerializer.Serialize(req));
-            // Try to contact server
-            if (UDP.GetAvailablePacketCount() > 0)
-            {
-                //GD.Print($"Connected: {_udp.GetPacket().GetStringFromUtf8()}");
+        send(JsonSerializer.Serialize(req));
+        // Try to contact server
+        if (UDP.GetAvailablePacketCount() > 0)
+        {
+            //GD.Print($"Connected: {_udp.GetPacket().GetStringFromUtf8()}");
+            List<string> list = response().Split(";").ToList<string>();
 
-                updateAllClients(response().Split(";").ToList<string>());
-
-                GD.Print(response());
-            }
+            if (list != null)
+                updateAllClients(list);
 
         }
-
     }
 
     // this part should be common to all games, I think
     private void updateAllClients(List<string> pList)
     {
-        if (pList.Count == 0) return;
+        Node2D obj;
+
 
         for (int i = 0; i < pList.Count; i++)
         {
             ReqModel req = JsonSerializer.Deserialize<ReqModel>(pList[i]);
 
-            Node2D obj = PlayersContainer.GetChild<Node2D>(req.Id);
 
-            if (obj != null)
+            obj = PlayersContainer.GetChildOrNull<Node2D>(req.Id);
+
+            if (obj == null)
             {
-                // update positon
-                // NOTE: perhaps this could be a signal
+                obj = (client_id == req.Id) ? player.Instantiate<Node2D>() : foreignPlayerBase.Instantiate<Node2D>();
+
+                if (client_id == req.Id)
+                    playerInst = obj;
+                // NOTE: perhaps this too could be a signal
                 obj.Position = new Vector2(req.pos_x, req.pos_y);
+
+                PlayersContainer.AddChild(obj);
 
                 continue;
             }
 
-            obj.AddChild((client_id == req.Id) ? player.Instantiate<Node2D>() : foreignPlayerBase.Instantiate<Node2D>());
 
+            // update positon
+            // NOTE: perhaps this could be a signal
+            obj.Position = new Vector2(req.pos_x, req.pos_y);
+
+
+            // NOTE: this is probabily useless
+            /*
             if (client_id == req.Id)
                 playerInst = obj;
-            // NOTE: perhaps this too could be a signal
-            obj.Position = new Vector2(req.pos_x, req.pos_y);
+            */
+
+
+
         }
     }
 
