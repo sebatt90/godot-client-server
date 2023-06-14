@@ -1,4 +1,4 @@
-# Godot: Game + Server
+# Godot 4: Game + Server
 
 My first attempt at programming a Client-Server socket, using the Godot's API for client-side stuff and standard C#'s UDP for Server side
 
