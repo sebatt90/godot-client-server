@@ -36,6 +36,20 @@ namespace GameServer.Hosts
 
         }
 
+        public void removeHostByEndPoint(IPEndPoint ep, ReqModel req)
+        {
+            try
+            {
+                Console.WriteLine($"{hosts[ep].PlayerName} ({ep}) has disconnected");
+                hosts.Remove(ep);
+                host_count--;
+            }
+            catch (KeyNotFoundException e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
         public List<ReqModel> updatePlayers(IPEndPoint ep, ReqModel req)
         {
             hosts[ep].Position = new Vector2(req.pos_x, req.pos_y);

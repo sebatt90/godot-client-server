@@ -6,14 +6,14 @@ namespace GameServer.Hosts
     public class PlayerInstance
     {
         // vars
-        private string playerName;
+        public string PlayerName { get; }
         private int playerId;
 
         public Vector2 Position { get; set; }
 
         public PlayerInstance(string playerName, int playerId)
         {
-            this.playerName = playerName;
+            this.PlayerName = playerName;
             this.playerId = playerId;
         }
 
@@ -23,7 +23,7 @@ namespace GameServer.Hosts
             {
                 Id = playerId,
                 Type = "UPDATE",
-                Name = playerName,
+                Name = PlayerName,
                 pos_x = Position.X,
                 pos_y = Position.Y
             };

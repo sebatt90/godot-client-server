@@ -69,6 +69,11 @@ namespace GameServer
                                 send(res);
                                 break;
                             }
+                        case "DISCONNECT":
+                            {
+                                // TODO
+                                break;
+                            }
                         default:
                             {
                                 // TODO

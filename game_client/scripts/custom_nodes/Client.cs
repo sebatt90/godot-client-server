@@ -73,6 +73,27 @@ public partial class Client : Node
 
     }
 
+    public override void _Notification(int what)
+    {
+        if (what == NotificationWMCloseRequest)
+        {
+            if (connected)
+            {
+                // send disconnect packet
+                req = new ReqModel
+                {
+                    Type = "DISCONNECT",
+                };
+                send(JsonSerializer.Serialize(req));
+                UDP.Close();
+                GD.Print("Connection closed!");
+            }
+            GetTree().Quit(); // default behavior
+        }
+    }
+
+    // server functions
+
     private void join()
     {
         if (UDP.GetAvailablePacketCount() > 0)
@@ -117,7 +138,6 @@ public partial class Client : Node
     private void updateAllClients(List<string> pList)
     {
         Node2D obj = null;
-
 
         for (int i = 0; i < pList.Count; i++)
         {
