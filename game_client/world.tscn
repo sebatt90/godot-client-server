@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://cg4eoqgjta4s8"]
+[gd_scene load_steps=5 format=3 uid="uid://cg4eoqgjta4s8"]
 
 [ext_resource type="Script" path="res://scripts/custom_nodes/Client.cs" id="1_5pyi6"]
+[ext_resource type="Script" path="res://scripts/PlayerContainer.cs" id="1_papxe"]
 [ext_resource type="PackedScene" uid="uid://dlqeivvw8qw8t" path="res://foreign_player.tscn" id="2_a31u0"]
 [ext_resource type="PackedScene" uid="uid://07jdjkp1s8u6" path="res://player.tscn" id="3_dxx7j"]
 
@@ -10,6 +11,7 @@
 zoom = Vector2(0.5, 0.5)
 
 [node name="players" type="Node2D" parent="."]
+script = ExtResource("1_papxe")
 
 [node name="Client" type="Node" parent="." node_paths=PackedStringArray("playersContainer")]
 script = ExtResource("1_5pyi6")

@@ -17,7 +17,7 @@ public partial class Client : Node
     private PackedScene foreignPlayerBase;
 
     [Export]
-    private Node playersContainer;
+    private PlayerContainer playersContainer;
 
     [ExportCategory("Player info")]
     [Export]
@@ -123,9 +123,7 @@ public partial class Client : Node
         {
             ReqModel req = JsonSerializer.Deserialize<ReqModel>(pList[i]);
 
-            foreach (Node2D plr in playersContainer.GetChildren())
-                if ((plr is ForeignPlayer && ((ForeignPlayer)plr).id == req.Id) || (plr is Player && client_id == ((Player)plr).player_id)) { obj = plr; break; }
-            //obj = playersContainer.GetChildOrNull<Node2D>(req.Id);
+            obj = playersContainer.getPlayerAtOrNull(req.Id);
 
             if (obj == null)
             {
