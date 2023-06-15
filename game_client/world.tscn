@@ -11,8 +11,8 @@ zoom = Vector2(0.5, 0.5)
 
 [node name="players" type="Node2D" parent="."]
 
-[node name="Client" type="Node" parent="." node_paths=PackedStringArray("PlayersContainer")]
+[node name="Client" type="Node" parent="." node_paths=PackedStringArray("playersContainer")]
 script = ExtResource("1_5pyi6")
 foreignPlayerBase = ExtResource("2_a31u0")
-PlayersContainer = NodePath("../players")
+playersContainer = NodePath("../players")
 player = ExtResource("3_dxx7j")

@@ -3,6 +3,9 @@ using System;
 
 public partial class Player : CharacterBody2D
 {
+
+    public int player_id;
+
     [Export]
     private int speed { get; set; } = 400;
 

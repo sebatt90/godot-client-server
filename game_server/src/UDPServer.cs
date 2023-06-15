@@ -51,7 +51,7 @@ namespace GameServer
                             {
                                 int id = hostHandler.addNewHost(ep, req);
 
-                                Console.WriteLine((id == -1) ? $"{ep.ToString()} has tried to join, but failed" : $"{ep.ToString()} has joined");
+                                Console.WriteLine((id == -1) ? $"{ep.ToString()} has tried to join, but failed" : $"{req.Name} ({ep.ToString()}) has joined");
                                 send(id.ToString());
                                 break;
                             }
@@ -80,8 +80,6 @@ namespace GameServer
                 {
                     Console.WriteLine(e);
                 }
-
-                Console.WriteLine(data);
             }
         }
 
