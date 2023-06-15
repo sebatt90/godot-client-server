@@ -79,6 +79,7 @@ public partial class Client : Node
         {
             if (connected)
             {
+                connected = false;
                 // send disconnect packet
                 req = new ReqModel
                 {

@@ -71,7 +71,7 @@ namespace GameServer
                             }
                         case "DISCONNECT":
                             {
-                                // TODO
+                                hostHandler.removeHostByEndPoint(ep);
                                 break;
                             }
                         default:

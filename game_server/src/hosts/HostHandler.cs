@@ -36,7 +36,7 @@ namespace GameServer.Hosts
 
         }
 
-        public void removeHostByEndPoint(IPEndPoint ep, ReqModel req)
+        public void removeHostByEndPoint(IPEndPoint ep)
         {
             try
             {
@@ -53,6 +53,7 @@ namespace GameServer.Hosts
         public List<ReqModel> updatePlayers(IPEndPoint ep, ReqModel req)
         {
             hosts[ep].Position = new Vector2(req.pos_x, req.pos_y);
+
 
             List<ReqModel> list = new List<ReqModel>();
             foreach (PlayerInstance pInst in hosts.Values)
