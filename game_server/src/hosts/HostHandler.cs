@@ -10,13 +10,13 @@ namespace GameServer.Hosts
 
         private int host_count;
 
-        private Dictionary<IPEndPoint, PlayerInstance> hosts;
+        public Dictionary<IPEndPoint, PlayerInstance> Hosts { get; private set; }
 
         public HostHandler(int max_players)
         {
             MAX_PLAYERS = max_players;
             host_count = 0;
-            hosts = new Dictionary<IPEndPoint, PlayerInstance>();
+            Hosts = new Dictionary<IPEndPoint, PlayerInstance>();
         }
 
         public int addNewHost(IPEndPoint ep, ReqModel req)
@@ -28,7 +28,7 @@ namespace GameServer.Hosts
             PlayerInstance newInst = new PlayerInstance(req.Name, host_count);
             newInst.Position = new Vector2(req.pos_x, req.pos_y);
 
-            hosts.Add(ep, newInst);
+            Hosts.Add(ep, newInst);
 
             host_count++;
 
@@ -36,27 +36,31 @@ namespace GameServer.Hosts
 
         }
 
-        public void removeHostByEndPoint(IPEndPoint ep)
+        public int removeHostByEndPoint(IPEndPoint ep)
         {
+            int host_id = -1;
             try
             {
-                Console.WriteLine($"{hosts[ep].PlayerName} ({ep}) has disconnected");
-                hosts.Remove(ep);
+                Console.WriteLine($"{Hosts[ep].PlayerName} ({ep}) has disconnected");
+                host_id = Hosts[ep].PlayerId;
+                Hosts.Remove(ep);
                 host_count--;
             }
             catch (KeyNotFoundException e)
             {
                 Console.WriteLine(e);
             }
+
+            return host_id;
         }
 
         public List<ReqModel> updatePlayers(IPEndPoint ep, ReqModel req)
         {
-            hosts[ep].Position = new Vector2(req.pos_x, req.pos_y);
+            Hosts[ep].Position = new Vector2(req.pos_x, req.pos_y);
 
 
             List<ReqModel> list = new List<ReqModel>();
-            foreach (PlayerInstance pInst in hosts.Values)
+            foreach (PlayerInstance pInst in Hosts.Values)
             {
                 list.Add(pInst.toUpdateRequest());
             }

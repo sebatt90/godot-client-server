@@ -1,3 +1,4 @@
+using System.Threading.Tasks.Dataflow;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -45,14 +46,27 @@ namespace GameServer
                     ReqModel req = JsonSerializer.Deserialize<ReqModel>(data);
 
                     // check request type
-                    switch (req.Type)
+                    switch (req?.Type)
                     {
                         case "JOIN":
                             {
                                 int id = hostHandler.addNewHost(ep, req);
 
+                                if (id == -1) break;
+
+                                ReqModel res = new ReqModel()
+                                {
+                                    Type = "PLAYERJOIN",
+                                    Name = req.Name,
+                                    Id = id,
+                                };
+
+                                broadcast(JsonSerializer.Serialize(res));
+
                                 Console.WriteLine((id == -1) ? $"{ep.ToString()} has tried to join, but failed" : $"{req.Name} ({ep.ToString()}) has joined");
                                 send(id.ToString());
+
+
                                 break;
                             }
                         case "UPDATE":
@@ -71,7 +85,16 @@ namespace GameServer
                             }
                         case "DISCONNECT":
                             {
-                                hostHandler.removeHostByEndPoint(ep);
+                                int host_id = hostHandler.removeHostByEndPoint(ep);
+
+                                ReqModel res = new ReqModel()
+                                {
+                                    Type = "PLAYERDISCONNECT",
+                                    Id = host_id,
+                                };
+
+                                broadcast(JsonSerializer.Serialize(res));
+
                                 break;
                             }
                         default:
@@ -92,6 +115,16 @@ namespace GameServer
         {
             byte[] resBytes = Encoding.ASCII.GetBytes(res);
             udpClient.Send(resBytes, resBytes.Length, ep);
+        }
+
+        private void broadcast(string res)
+        {
+            byte[] resBytes = Encoding.ASCII.GetBytes(res);
+
+            foreach (IPEndPoint Ep in hostHandler.Hosts.Keys)
+            {
+                udpClient.Send(resBytes, resBytes.Length, Ep);
+            }
         }
     }
 }

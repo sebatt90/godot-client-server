@@ -63,7 +63,6 @@ public partial class Client : Node
         switch (connected)
         {
             case true:
-
                 update();
                 break;
             case false:
@@ -106,11 +105,37 @@ public partial class Client : Node
                 this.client_id = res.ToInt();
                 this.connected = true;
 
+                // function to init player
+                playerInit();
+
                 return;
             }
 
             GD.Print("Couldn't connect to server!");
         }
+    }
+
+    private void playerInit()
+    {
+        playerInst = (Player)player.Instantiate<Node2D>();
+        playerInst.player_id = client_id;
+        playerInst.Position = Vector2.Zero;
+
+        playersContainer.AddChild(playerInst);
+
+    }
+
+    private void playerJoinEvent(string name, int id)
+    {
+        ForeignPlayer fp = (ForeignPlayer)instForeignPlayer(name, id);
+        playersContainer.AddChild(fp);
+    }
+
+    private void playerDisconnectEvent(int disconnect_id)
+    {
+        foreach (Node2D plr in playersContainer.GetChildren())
+            if (plr is ForeignPlayer && ((ForeignPlayer)plr).id == disconnect_id)
+                playersContainer.RemoveChild(plr);
     }
 
     private void update()
@@ -124,14 +149,41 @@ public partial class Client : Node
         req.pos_y = (playerInst == null) ? 0 : playerInst.Position.Y;
 
         send(JsonSerializer.Serialize(req));
-        // Try to contact server
+
+        eventType();
+    }
+
+    private void eventType()
+    {
         if (UDP.GetAvailablePacketCount() > 0)
         {
-            List<string> list = response().Split(";").ToList<string>();
+            string res = response();
 
-            if (list != null)
-                updateAllClients(list);
 
+            List<string> list = res.Split(";").ToList<string>();
+
+            if (list == null) return;
+
+            ReqModel req = JsonSerializer.Deserialize<ReqModel>(list[0]);
+
+            switch (req.Type)
+            {
+                case "UPDATE":
+                    {
+                        updateAllClients(list);
+                        break;
+                    }
+                case "PLAYERJOIN":
+                    {
+                        playerJoinEvent(req.Name, req.Id);
+                        break;
+                    }
+                case "PLAYERDISCONNECT":
+                    {
+                        playerDisconnectEvent(req.Id);
+                        break;
+                    }
+            }
         }
     }
 
@@ -148,20 +200,7 @@ public partial class Client : Node
 
             if (obj == null)
             {
-
-                obj = (client_id == req.Id) ? player.Instantiate<Node2D>() : instForeignPlayer(req.Name, req.Id);
-
-                if (client_id == req.Id)
-                {
-                    playerInst = (Player)obj;
-                    playerInst.player_id = client_id;
-
-                }
-                // NOTE: perhaps this too could be a signal
-                obj.Position = new Vector2(req.pos_x, req.pos_y);
-
-                playersContainer.AddChild(obj);
-
+                playerJoinEvent(req.Name, req.Id);
                 continue;
             }
 
