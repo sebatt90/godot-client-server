@@ -7,6 +7,3 @@ My plan here is to create a template for any multiplayer game idea that I might 
 **.NET Version:** `7`
 
 **Godot Version:** `4.0.3.stable.mono`
-
-
-**NOTE:** this is very much a test, so far the server works but once players disconnect, the server does not *actually* disconnect them.
