@@ -11,5 +11,3 @@ My plan here is to create a template for any multiplayer game idea that I might 
 ## What now?
 
 The sever works, but I think that in the future I might move some of the client-side code to the server.
-
-- [ x ]
