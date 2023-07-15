@@ -7,3 +7,9 @@ My plan here is to create a template for any multiplayer game idea that I might 
 **.NET Version:** `7`
 
 **Godot Version:** `4.0.3.stable.mono`
+
+## What now?
+
+The sever works, but I think that in the future I might move some of the client-side code to the server.
+
+- [ x ]
