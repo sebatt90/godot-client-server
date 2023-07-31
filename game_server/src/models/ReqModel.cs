@@ -1,11 +1,10 @@
-namespace GameServer.Models
+namespace GameServer.Models;
+
+public class ReqModel
 {
-    public class ReqModel
-    {
-        public int Id { get; set; }
-        public string Type { get; set; }
-        public string Name { get; set; }
-        public float pos_x { get; set; }
-        public float pos_y { get; set; }
-    }
+    public int Id { get; set; }
+    public string Type { get; set; }
+    public string Name { get; set; }
+    public float pos_x { get; set; }
+    public float pos_y { get; set; }
 }

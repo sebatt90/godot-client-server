@@ -1,34 +1,33 @@
 using GameServer.Game;
 using GameServer.Models;
 
-namespace GameServer.Hosts
+namespace GameServer.Hosts;
+
+public class PlayerInstance
 {
-    public class PlayerInstance
+    // vars
+    public string PlayerName { get; }
+
+    public int PlayerId { get; }
+
+    public Vector2 Position { get; set; }
+
+    public PlayerInstance(string playerName, int playerId)
     {
-        // vars
-        public string PlayerName { get; }
+        this.PlayerName = playerName;
+        this.PlayerId = playerId;
+    }
 
-        public int PlayerId { get; }
-
-        public Vector2 Position { get; set; }
-
-        public PlayerInstance(string playerName, int playerId)
+    public ReqModel toUpdateRequest()
+    {
+        ReqModel req = new()
         {
-            this.PlayerName = playerName;
-            this.PlayerId = playerId;
-        }
-
-        public ReqModel toUpdateRequest()
-        {
-            ReqModel req = new()
-            {
-                Id = PlayerId,
-                Type = "UPDATE",
-                Name = PlayerName,
-                pos_x = Position.X,
-                pos_y = Position.Y
-            };
-            return req;
-        }
+            Id = PlayerId,
+            Type = "UPDATE",
+            Name = PlayerName,
+            pos_x = Position.X,
+            pos_y = Position.Y
+        };
+        return req;
     }
 }
