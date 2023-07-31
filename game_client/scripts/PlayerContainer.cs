@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using Godot;
-using System;
 
 public partial class PlayerContainer : Node2D
 {

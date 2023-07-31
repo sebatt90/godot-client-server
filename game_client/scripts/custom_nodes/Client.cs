@@ -1,8 +1,6 @@
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using Godot;
-using ClientModels;
 using System.Text;
 using System.Text.Json;
 
@@ -23,7 +21,7 @@ public partial class Client : Node
     [Export]
     private PackedScene player;
 
-    private PacketPeerUdp UDP = new PacketPeerUdp();
+    private PacketPeerUdp UDP = new();
     private bool connected = false;
     private string res;
 
@@ -43,7 +41,7 @@ public partial class Client : Node
             _udp.GetPacket().GetStringFromUtf8()
 
         */
-        UDP.ConnectToHost((PlayerInfo.ip != null) ? PlayerInfo.ip : "127.0.0.1", PlayerInfo.port);
+        UDP.ConnectToHost(PlayerInfo.ip ?? "127.0.0.1", PlayerInfo.port);
 
         // send connection packet
         req = new ReqModel()
@@ -189,7 +187,7 @@ public partial class Client : Node
     // this part should be common to all games, I think
     private void updateAllClients(List<string> pList)
     {
-        Node2D obj = null;
+        Node2D obj;
 
         for (int i = 0; i < pList.Count; i++)
         {
@@ -207,9 +205,6 @@ public partial class Client : Node
                 // update positon
                 // NOTE: perhaps this could be a signal
                 obj.Position = new Vector2(req.pos_x, req.pos_y);
-
-            // reset object to null
-            obj = null;
         }
     }
 
@@ -219,18 +214,12 @@ public partial class Client : Node
         fPlr.name = name;
         fPlr.id = id;
 
-        return (Node2D)fPlr;
+        return fPlr;
     }
 
-    private void send(string req)
-    {
-        UDP.PutPacket(Encoding.Default.GetBytes(req));
-    }
+    private void send(string req) => UDP.PutPacket(Encoding.Default.GetBytes(req));
 
-    private string response()
-    {
-        return UDP.GetPacket().GetStringFromUtf8();
-    }
+    private string response() => UDP.GetPacket().GetStringFromUtf8();
 
     // The functions listed below are very much game specific
 }
