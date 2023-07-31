@@ -50,7 +50,7 @@ public partial class Client : Node
             Name = PlayerInfo.playerName
         };
         GD.Print("Trying to connect...");
-        send(JsonSerializer.Serialize(req));
+        Send(JsonSerializer.Serialize(req));
 
 
     }
@@ -61,10 +61,10 @@ public partial class Client : Node
         switch (connected)
         {
             case true:
-                update();
+                Update();
                 break;
             case false:
-                join();
+                Join();
                 break;
         }
 
@@ -82,7 +82,7 @@ public partial class Client : Node
                 {
                     Type = "DISCONNECT",
                 };
-                send(JsonSerializer.Serialize(req));
+                Send(JsonSerializer.Serialize(req));
                 UDP.Close();
                 GD.Print("Connection closed!");
             }
@@ -92,11 +92,11 @@ public partial class Client : Node
 
     // server functions
 
-    private void join()
+    private void Join()
     {
         if (UDP.GetAvailablePacketCount() > 0)
         {
-            res = response();
+            res = Response();
             if (res.ToInt() != -1)
             {
                 GD.Print("Connected successfully!");
@@ -104,7 +104,7 @@ public partial class Client : Node
                 this.connected = true;
 
                 // function to init player
-                playerInit();
+                PlayerInit();
 
                 return;
             }
@@ -113,7 +113,7 @@ public partial class Client : Node
         }
     }
 
-    private void playerInit()
+    private void PlayerInit()
     {
         playerInst = (Player)player.Instantiate<Node2D>();
         playerInst.Id = client_id;
@@ -123,20 +123,20 @@ public partial class Client : Node
 
     }
 
-    private void playerJoinEvent(string name, int id)
+    private void PlayerJoinEvent(string name, int id)
     {
-        ForeignPlayer fp = (ForeignPlayer)instForeignPlayer(name, id);
+        ForeignPlayer fp = (ForeignPlayer)InstForeignPlayer(name, id);
         playersContainer.AddChild(fp);
     }
 
-    private void playerDisconnectEvent(int disconnect_id)
+    private void PlayerDisconnectEvent(int disconnect_id)
     {
         foreach (Node2D plr in playersContainer.GetChildren())
             if (plr is ForeignPlayer player && player.id == disconnect_id)
                 playersContainer.RemoveChild(plr);
     }
 
-    private void update()
+    private void Update()
     {
         req = new ReqModel
         {
@@ -145,16 +145,16 @@ public partial class Client : Node
             pos_y = (playerInst == null) ? 0 : playerInst.Position.Y
         };
 
-        send(JsonSerializer.Serialize(req));
+        Send(JsonSerializer.Serialize(req));
 
-        eventType();
+        EventType();
     }
 
-    private void eventType()
+    private void EventType()
     {
         if (UDP.GetAvailablePacketCount() > 0)
         {
-            string res = response();
+            string res = Response();
 
 
             List<string> list = res.Split(";").ToList<string>();
@@ -167,17 +167,17 @@ public partial class Client : Node
             {
                 case "UPDATE":
                     {
-                        updateAllClients(list);
+                        UpdateAllClients(list);
                         break;
                     }
                 case "PLAYERJOIN":
                     {
-                        playerJoinEvent(req.Name, req.Id);
+                        PlayerJoinEvent(req.Name, req.Id);
                         break;
                     }
                 case "PLAYERDISCONNECT":
                     {
-                        playerDisconnectEvent(req.Id);
+                        PlayerDisconnectEvent(req.Id);
                         break;
                     }
             }
@@ -185,7 +185,7 @@ public partial class Client : Node
     }
 
     // this part should be common to all games, I think
-    private void updateAllClients(List<string> pList)
+    private void UpdateAllClients(List<string> pList)
     {
         Node2D obj;
 
@@ -193,11 +193,11 @@ public partial class Client : Node
         {
             ReqModel req = JsonSerializer.Deserialize<ReqModel>(pList[i]);
 
-            obj = playersContainer.getPlayerAtOrNull(req.Id);
+            obj = playersContainer.GetPlayerAtOrNull(req.Id);
 
             if (obj == null)
             {
-                playerJoinEvent(req.Name, req.Id);
+                PlayerJoinEvent(req.Name, req.Id);
                 continue;
             }
 
@@ -208,7 +208,7 @@ public partial class Client : Node
         }
     }
 
-    private Node2D instForeignPlayer(string name, int id)
+    private Node2D InstForeignPlayer(string name, int id)
     {
         ForeignPlayer fPlr = foreignPlayerBase.Instantiate<ForeignPlayer>();
         fPlr.name = name;
@@ -217,9 +217,9 @@ public partial class Client : Node
         return fPlr;
     }
 
-    private void send(string req) => UDP.PutPacket(Encoding.Default.GetBytes(req));
+    private void Send(string req) => UDP.PutPacket(Encoding.Default.GetBytes(req));
 
-    private string response() => UDP.GetPacket().GetStringFromUtf8();
+    private string Response() => UDP.GetPacket().GetStringFromUtf8();
 
     // The functions listed below are very much game specific
 }
