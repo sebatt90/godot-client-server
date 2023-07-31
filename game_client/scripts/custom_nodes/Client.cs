@@ -118,7 +118,7 @@ public partial class Client : Node
     private void playerInit()
     {
         playerInst = (Player)player.Instantiate<Node2D>();
-        playerInst.player_id = client_id;
+        playerInst.Id = client_id;
         playerInst.Position = Vector2.Zero;
 
         playersContainer.AddChild(playerInst);
@@ -134,19 +134,18 @@ public partial class Client : Node
     private void playerDisconnectEvent(int disconnect_id)
     {
         foreach (Node2D plr in playersContainer.GetChildren())
-            if (plr is ForeignPlayer && ((ForeignPlayer)plr).id == disconnect_id)
+            if (plr is ForeignPlayer player && player.id == disconnect_id)
                 playersContainer.RemoveChild(plr);
     }
 
     private void update()
     {
-        req = new ReqModel()
+        req = new ReqModel
         {
             Type = "UPDATE",
+            pos_x = (playerInst == null) ? 0 : playerInst.Position.X,
+            pos_y = (playerInst == null) ? 0 : playerInst.Position.Y
         };
-
-        req.pos_x = (playerInst == null) ? 0 : playerInst.Position.X;
-        req.pos_y = (playerInst == null) ? 0 : playerInst.Position.Y;
 
         send(JsonSerializer.Serialize(req));
 
