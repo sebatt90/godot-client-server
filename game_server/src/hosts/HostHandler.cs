@@ -26,7 +26,7 @@ public class HostHandler
             return -1;
 
         PlayerInstance newInst = new(req.Name, host_count);
-        newInst.Position = new Vector2(req.pos_x, req.pos_y);
+        newInst.Position = new Vector2(req.Pos_x, req.Pos_y);
 
         Hosts.Add(ep, newInst);
 
@@ -35,7 +35,7 @@ public class HostHandler
         return host_count - 1;
     }
 
-    public int removeHostByEndPoint(IPEndPoint ep)
+    public int RemoveHostByEndPoint(IPEndPoint ep)
     {
         int host_id = -1;
         try
@@ -53,14 +53,14 @@ public class HostHandler
         return host_id;
     }
 
-    public List<ReqModel> updatePlayers(IPEndPoint ep, ReqModel req)
+    public List<ReqModel> UpdatePlayers(IPEndPoint ep, ReqModel req)
     {
-        Hosts[ep].Position = new Vector2(req.pos_x, req.pos_y);
+        Hosts[ep].Position = new Vector2(req.Pos_x, req.Pos_y);
 
         List<ReqModel> list = new();
         foreach (PlayerInstance pInst in Hosts.Values)
         {
-            list.Add(pInst.toUpdateRequest());
+            list.Add(pInst.ToUpdateRequest());
         }
         return list;
     }

@@ -18,15 +18,15 @@ public class PlayerInstance
         this.PlayerId = playerId;
     }
 
-    public ReqModel toUpdateRequest()
+    public ReqModel ToUpdateRequest()
     {
         ReqModel req = new()
         {
             Id = PlayerId,
             Type = "UPDATE",
             Name = PlayerName,
-            pos_x = Position.X,
-            pos_y = Position.Y
+            Pos_x = Position.X,
+            Pos_y = Position.Y
         };
         return req;
     }

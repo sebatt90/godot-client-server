@@ -26,7 +26,7 @@ public class UDPServer
         hostHandler = new HostHandler(max_hosts);
     }
 
-    public void start()
+    public void Start()
     {
         Console.WriteLine("Godot: Game + Server's server started on Port " + ServerSettings.port);
 
@@ -56,16 +56,16 @@ public class UDPServer
                                 Id = id,
                             };
 
-                            broadcast(JsonSerializer.Serialize(res));
+                            Broadcast(JsonSerializer.Serialize(res));
 
                             Console.WriteLine((id == -1) ? $"{ep.ToString()} has tried to join, but failed" : $"{req.Name} ({ep.ToString()}) has joined");
-                            send(id.ToString());
+                            Send(id.ToString());
 
                             break;
                         }
                     case "UPDATE":
                         {
-                            List<ReqModel> resList = hostHandler.updatePlayers(ep, req);
+                            List<ReqModel> resList = hostHandler.UpdatePlayers(ep, req);
 
                             string res = "";
 
@@ -74,12 +74,12 @@ public class UDPServer
                                 res += (JsonSerializer.Serialize(resList[i]) + (i == (resList.Count - 1) ? "" : ";"));
                             }
 
-                            send(res);
+                            Send(res);
                             break;
                         }
                     case "DISCONNECT":
                         {
-                            int host_id = hostHandler.removeHostByEndPoint(ep);
+                            int host_id = hostHandler.RemoveHostByEndPoint(ep);
 
                             ReqModel res = new()
                             {
@@ -87,7 +87,7 @@ public class UDPServer
                                 Id = host_id,
                             };
 
-                            broadcast(JsonSerializer.Serialize(res));
+                            Broadcast(JsonSerializer.Serialize(res));
 
                             break;
                         }
@@ -105,13 +105,13 @@ public class UDPServer
         }
     }
 
-    private void send(string res)
+    private void Send(string res)
     {
         byte[] resBytes = Encoding.ASCII.GetBytes(res);
         udpClient.Send(resBytes, resBytes.Length, ep);
     }
 
-    private void broadcast(string res)
+    private void Broadcast(string res)
     {
         byte[] resBytes = Encoding.ASCII.GetBytes(res);
 
