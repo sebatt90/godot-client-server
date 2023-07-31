@@ -1,5 +1,5 @@
-using GameServer.Models;
 using GameServer.Game;
+using GameServer.Models;
 
 namespace GameServer.Hosts
 {
@@ -7,6 +7,7 @@ namespace GameServer.Hosts
     {
         // vars
         public string PlayerName { get; }
+
         public int PlayerId { get; }
 
         public Vector2 Position { get; set; }
@@ -19,7 +20,7 @@ namespace GameServer.Hosts
 
         public ReqModel toUpdateRequest()
         {
-            ReqModel req = new ReqModel
+            ReqModel req = new()
             {
                 Id = PlayerId,
                 Type = "UPDATE",

@@ -1,6 +1,6 @@
-using System.Net;
-using GameServer.Models;
 using GameServer.Game;
+using GameServer.Models;
+using System.Net;
 
 namespace GameServer.Hosts
 {
@@ -25,7 +25,7 @@ namespace GameServer.Hosts
             if (host_count >= MAX_PLAYERS)
                 return -1;
 
-            PlayerInstance newInst = new PlayerInstance(req.Name, host_count);
+            PlayerInstance newInst = new(req.Name, host_count);
             newInst.Position = new Vector2(req.pos_x, req.pos_y);
 
             Hosts.Add(ep, newInst);
@@ -33,7 +33,6 @@ namespace GameServer.Hosts
             host_count++;
 
             return host_count - 1;
-
         }
 
         public int removeHostByEndPoint(IPEndPoint ep)
@@ -58,15 +57,12 @@ namespace GameServer.Hosts
         {
             Hosts[ep].Position = new Vector2(req.pos_x, req.pos_y);
 
-
-            List<ReqModel> list = new List<ReqModel>();
+            List<ReqModel> list = new();
             foreach (PlayerInstance pInst in Hosts.Values)
             {
                 list.Add(pInst.toUpdateRequest());
             }
             return list;
         }
-
-
     }
 }

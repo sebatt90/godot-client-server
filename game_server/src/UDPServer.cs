@@ -1,15 +1,9 @@
-using System.Threading.Tasks.Dataflow;
-using System;
+using GameServer.Hosts;
+using GameServer.Models;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Configuration;
-
 using System.Text.Json;
-
-using GameServer;
-using GameServer.Hosts;
-using GameServer.Models;
 
 namespace GameServer
 {
@@ -52,9 +46,10 @@ namespace GameServer
                             {
                                 int id = hostHandler.addNewHost(ep, req);
 
-                                if (id == -1) break;
+                                if (id == -1)
+                                    break;
 
-                                ReqModel res = new ReqModel()
+                                ReqModel res = new()
                                 {
                                     Type = "PLAYERJOIN",
                                     Name = req.Name,
@@ -65,7 +60,6 @@ namespace GameServer
 
                                 Console.WriteLine((id == -1) ? $"{ep.ToString()} has tried to join, but failed" : $"{req.Name} ({ep.ToString()}) has joined");
                                 send(id.ToString());
-
 
                                 break;
                             }
@@ -87,7 +81,7 @@ namespace GameServer
                             {
                                 int host_id = hostHandler.removeHostByEndPoint(ep);
 
-                                ReqModel res = new ReqModel()
+                                ReqModel res = new()
                                 {
                                     Type = "PLAYERDISCONNECT",
                                     Id = host_id,
