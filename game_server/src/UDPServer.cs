@@ -58,7 +58,7 @@ public class UDPServer
 
                             Broadcast(JsonSerializer.Serialize(res));
 
-                            Console.WriteLine((id == -1) ? $"{ep.ToString()} has tried to join, but failed" : $"{req.Name} ({ep.ToString()}) has joined");
+                            Console.WriteLine((id == -1) ? $"{ep} has tried to join, but failed" : $"{req.Name} ({ep}) has joined");
                             Send(id.ToString());
 
                             break;
