@@ -1,20 +1,9 @@
-﻿using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Configuration;
+﻿using GameServer;
 
-using System.Text.Json;
-
-using GameServer;
-using GameServer.Hosts;
-using GameServer.Models;
-
-class Program
+internal class Program
 {
-
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
-        new UDPServer(10).start();
+        new UDPServer(10).Start();
     }
 }

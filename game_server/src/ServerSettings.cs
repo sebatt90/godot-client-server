@@ -1,7 +1,6 @@
-namespace GameServer
+namespace GameServer;
+
+public class ServerSettings
 {
-    public class ServerSettings
-    {
-        public static int port = 4242;
-    }
+    public static int port = 4242;
 }

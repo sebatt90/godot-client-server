@@ -1,130 +1,123 @@
-using System.Threading.Tasks.Dataflow;
-using System;
+using GameServer.Hosts;
+using GameServer.Models;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Configuration;
-
 using System.Text.Json;
 
-using GameServer;
-using GameServer.Hosts;
-using GameServer.Models;
+namespace GameServer;
 
-namespace GameServer
+public class UDPServer
 {
-    public class UDPServer
+    private UdpClient udpClient;
+    private IPEndPoint ep;
+
+    private string data;
+
+    private HostHandler hostHandler;
+
+    public UDPServer(int max_hosts)
     {
-        private UdpClient udpClient;
-        private IPEndPoint ep;
+        // Setup
+        udpClient = new UdpClient(ServerSettings.port);
+        ep = new IPEndPoint(IPAddress.Any, 0);
+        data = "";
 
-        private string data;
+        hostHandler = new HostHandler(max_hosts);
+    }
 
-        private HostHandler hostHandler;
+    public void Start()
+    {
+        Console.WriteLine("Godot: Game + Server's server started on Port " + ServerSettings.port);
 
-        public UDPServer(int max_hosts)
+        while (true)
         {
-            // Setup
-            udpClient = new UdpClient(ServerSettings.port);
-            ep = new IPEndPoint(IPAddress.Any, 0);
-            data = "";
+            byte[] receivedData = udpClient.Receive(ref ep);
+            data = Encoding.ASCII.GetString(receivedData);
 
-            hostHandler = new HostHandler(max_hosts);
-        }
-
-        public void start()
-        {
-            Console.WriteLine("Godot: Game + Server's server started on Port " + ServerSettings.port);
-
-            while (true)
+            try
             {
-                byte[] receivedData = udpClient.Receive(ref ep);
-                data = Encoding.ASCII.GetString(receivedData);
+                ReqModel req = JsonSerializer.Deserialize<ReqModel>(data);
 
-                try
+                // check request type
+                switch (req?.Type)
                 {
-                    ReqModel req = JsonSerializer.Deserialize<ReqModel>(data);
+                    case "JOIN":
+                        {
+                            int id = hostHandler.addNewHost(ep, req);
 
-                    // check request type
-                    switch (req?.Type)
-                    {
-                        case "JOIN":
-                            {
-                                int id = hostHandler.addNewHost(ep, req);
-
-                                if (id == -1) break;
-
-                                ReqModel res = new ReqModel()
-                                {
-                                    Type = "PLAYERJOIN",
-                                    Name = req.Name,
-                                    Id = id,
-                                };
-
-                                broadcast(JsonSerializer.Serialize(res));
-
-                                Console.WriteLine((id == -1) ? $"{ep.ToString()} has tried to join, but failed" : $"{req.Name} ({ep.ToString()}) has joined");
-                                send(id.ToString());
-
-
+                            if (id == -1)
                                 break;
-                            }
-                        case "UPDATE":
+
+                            ReqModel res = new()
                             {
-                                List<ReqModel> resList = hostHandler.updatePlayers(ep, req);
+                                Type = "PLAYERJOIN",
+                                Name = req.Name,
+                                Id = id,
+                            };
 
-                                string res = "";
+                            Broadcast(JsonSerializer.Serialize(res));
 
-                                for (int i = 0; i < resList.Count; i++)
-                                {
-                                    res += (JsonSerializer.Serialize(resList[i]) + (i == (resList.Count - 1) ? "" : ";"));
-                                }
+                            Console.WriteLine((id == -1) ? $"{ep} has tried to join, but failed" : $"{req.Name} ({ep}) has joined");
+                            Send(id.ToString());
 
-                                send(res);
-                                break;
-                            }
-                        case "DISCONNECT":
+                            break;
+                        }
+                    case "UPDATE":
+                        {
+                            List<ReqModel> resList = hostHandler.UpdatePlayers(ep, req);
+
+                            string res = "";
+
+                            for (int i = 0; i < resList.Count; i++)
                             {
-                                int host_id = hostHandler.removeHostByEndPoint(ep);
-
-                                ReqModel res = new ReqModel()
-                                {
-                                    Type = "PLAYERDISCONNECT",
-                                    Id = host_id,
-                                };
-
-                                broadcast(JsonSerializer.Serialize(res));
-
-                                break;
+                                res += (JsonSerializer.Serialize(resList[i]) + (i == (resList.Count - 1) ? "" : ";"));
                             }
-                        default:
+
+                            Send(res);
+                            break;
+                        }
+                    case "DISCONNECT":
+                        {
+                            int host_id = hostHandler.RemoveHostByEndPoint(ep);
+
+                            ReqModel res = new()
                             {
-                                // TODO
-                                break;
-                            }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
+                                Type = "PLAYERDISCONNECT",
+                                Id = host_id,
+                            };
+
+                            Broadcast(JsonSerializer.Serialize(res));
+
+                            break;
+                        }
+                    default:
+                        {
+                            // TODO
+                            break;
+                        }
                 }
             }
-        }
-
-        private void send(string res)
-        {
-            byte[] resBytes = Encoding.ASCII.GetBytes(res);
-            udpClient.Send(resBytes, resBytes.Length, ep);
-        }
-
-        private void broadcast(string res)
-        {
-            byte[] resBytes = Encoding.ASCII.GetBytes(res);
-
-            foreach (IPEndPoint Ep in hostHandler.Hosts.Keys)
+            catch (Exception e)
             {
-                udpClient.Send(resBytes, resBytes.Length, Ep);
+                Console.WriteLine(e);
             }
+        }
+    }
+
+    private void Send(string res)
+    {
+        byte[] resBytes = Encoding.ASCII.GetBytes(res);
+        udpClient.Send(resBytes, resBytes.Length, ep);
+    }
+
+    private void Broadcast(string res)
+    {
+        byte[] resBytes = Encoding.ASCII.GetBytes(res);
+
+        foreach (IPEndPoint Ep in hostHandler.Hosts.Keys)
+        {
+            udpClient.Send(resBytes, resBytes.Length, Ep);
         }
     }
 }
